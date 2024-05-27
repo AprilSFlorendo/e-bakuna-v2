@@ -19,6 +19,7 @@
 			.then(() => {
 				vaccines = vaccines.filter((vaccine) => vaccine.id !== currentId);
 				dialogOpen = false;
+				toast.success('Vaccine deleted successfully');
 			})
 			.catch(() => {
 				dialogOpen = false;

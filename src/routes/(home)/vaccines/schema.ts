@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const schema = z.object({
+	id: z.string().default(''),
 	name: z.string().min(1, { message: 'Name is required' }),
 	description: z.string().min(1, { message: 'Description is required' }),
 	doses: z.coerce

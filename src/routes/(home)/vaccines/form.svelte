@@ -11,9 +11,9 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 
 	export let data: SuperValidated<Infer<Schema>>;
+	export let editing = false;
 
 	$: submitting = false;
-	$: errorMessage = '';
 
 	const form = superForm(data, {
 		validators: zodClient(schema),
@@ -22,11 +22,17 @@
 		},
 		onResult: ({ result }) => {
 			if (result.status === 400) {
-				console.log(form.message);
-				// @ts-ignore
-				errorMessage = result.data.message ?? '';
+				//@ts-ignore
+				const error = result.data.message;
+				if (error) {
+					toast.error(error);
+				}
+				submitting = false;
+				return;
 			}
 
+			const message = editing ? 'Vaccine updated successfully' : 'Vaccine created successfully';
+			toast.success(message);
 			submitting = false;
 		},
 		onError: () => {
@@ -36,16 +42,17 @@
 	});
 
 	const { form: formData, enhance } = form;
-
-	$: {
-		if (form.message) {
-			errorMessage = '';
-		}
-	}
 </script>
 
 <div>
 	<form class="flex flex-col gap-6" method="POST" use:focusTrap={true} use:enhance>
+		<Form.Field class="hidden" {form} name="id">
+			<Form.Control let:attrs>
+				<Form.Label>Id</Form.Label>
+				<Input class="bg-background" {...attrs} bind:value={$formData.id} />
+			</Form.Control>
+			<Form.FieldErrors />
+		</Form.Field>
 		<Form.Field {form} name="name">
 			<Form.Control let:attrs>
 				<Form.Label>Name</Form.Label>

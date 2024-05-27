@@ -8,6 +8,13 @@
       "when": 1716730072845,
       "tag": "0000_wet_silver_fox",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1716771494951,
+      "tag": "0001_furry_mandroid",
+      "breakpoints": true
     }
   ]
 }

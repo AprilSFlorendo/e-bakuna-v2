@@ -21,7 +21,7 @@
 			<SideNav class="w-[250px] overflow-x-hidden p-6 " />
 		</section>
 		<div class="sm:p4 flex flex-grow flex-col overflow-hidden p-6 py-4 sm:px-2">
-			<div class="flex-grow">
+			<div class="m-2 mx-4 flex-grow">
 				<slot />
 			</div>
 			<Footer />

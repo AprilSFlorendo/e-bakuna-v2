@@ -42,6 +42,12 @@
 				Animals
 			</div>
 		</a>
+		<a class={`${navStyles} ${handleNavSelection('/vaccines')}`} href="/vaccines">
+			<div class="flex gap-2">
+				<Syringe />
+				Vaccines
+			</div>
+		</a>
 	</nav>
 	<Separator class="bg-zinc-500" />
 	<a class={`${navStyles} ${handleNavSelection('/feedback')}`} href="/feedback">

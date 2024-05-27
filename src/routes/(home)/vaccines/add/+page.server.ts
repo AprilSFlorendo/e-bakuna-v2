@@ -1,11 +1,12 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { superValidate } from 'sveltekit-superforms';
+import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { schema } from './schema';
+import { schema } from '../schema';
 import { db } from '$lib/server/db';
 import { generateId } from 'lucia';
 import { vaccine } from '$lib/server/db/schema/vaccine';
+import { eq, sql } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
@@ -18,15 +19,19 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions = {
 	default: async (event) => {
-		console.log(event);
 		const form = await superValidate(event, zod(schema));
 		if (!form.valid) {
-			return {
-				status: 400,
-				body: {
-					form
-				}
-			};
+			return fail(400, { form });
+		}
+
+		const existing = await db
+			.select()
+			.from(vaccine)
+			.where(eq(sql`lower(${vaccine.name})`, sql`lower(${form.data.name})`))
+			.execute();
+
+		if (existing && existing.length > 0) {
+			return fail(400, { form, message: 'Vaccine already exists' });
 		}
 
 		await db.insert(vaccine).values({
@@ -37,11 +42,6 @@ export const actions = {
 			interval: form.data.interval
 		});
 
-		return {
-			status: 200,
-			body: {
-				form
-			}
-		};
+		return { form };
 	}
 };

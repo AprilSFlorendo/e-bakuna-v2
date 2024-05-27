@@ -21,13 +21,14 @@
 			submitting = true;
 		},
 		onResult: ({ result }) => {
-			if (result.status === 400) {
+			if (result.status !== 200) {
+				submitting = false;
+
 				//@ts-ignore
-				const error = result.data.message;
+				const error = result.data?.message ?? null;
 				if (error) {
 					toast.error(error);
 				}
-				submitting = false;
 				return;
 			}
 
@@ -44,51 +45,49 @@
 	const { form: formData, enhance } = form;
 </script>
 
-<div>
-	<form class="flex flex-col gap-6" method="POST" use:focusTrap={true} use:enhance>
-		<Form.Field class="hidden" {form} name="id">
+<form class="flex flex-col gap-6" method="POST" use:focusTrap={true} use:enhance>
+	<Form.Field class="hidden" {form} name="id">
+		<Form.Control let:attrs>
+			<Form.Label>Id</Form.Label>
+			<Input class="bg-background" {...attrs} bind:value={$formData.id} />
+		</Form.Control>
+		<Form.FieldErrors />
+	</Form.Field>
+	<Form.Field {form} name="name">
+		<Form.Control let:attrs>
+			<Form.Label>Name</Form.Label>
+			<Input class="bg-background" {...attrs} bind:value={$formData.name} />
+		</Form.Control>
+		<Form.FieldErrors />
+	</Form.Field>
+	<Form.Field {form} name="description">
+		<Form.Control let:attrs>
+			<Form.Label>Description</Form.Label>
+			<Textarea class="bg-background" {...attrs} bind:value={$formData.description} />
+		</Form.Control>
+		<Form.FieldErrors />
+	</Form.Field>
+	<div class="flex flex-col gap-2 sm:flex-row">
+		<Form.Field {form} name="doses">
 			<Form.Control let:attrs>
-				<Form.Label>Id</Form.Label>
-				<Input class="bg-background" {...attrs} bind:value={$formData.id} />
+				<Form.Label>No. of Doses (ml)</Form.Label>
+				<Input class="bg-background" {...attrs} bind:value={$formData.doses} />
 			</Form.Control>
 			<Form.FieldErrors />
 		</Form.Field>
-		<Form.Field {form} name="name">
+		<Form.Field {form} name="interval">
 			<Form.Control let:attrs>
-				<Form.Label>Name</Form.Label>
-				<Input class="bg-background" {...attrs} bind:value={$formData.name} />
+				<Form.Label>Interval (days)</Form.Label>
+				<Input class="bg-background" {...attrs} bind:value={$formData.interval} />
 			</Form.Control>
 			<Form.FieldErrors />
 		</Form.Field>
-		<Form.Field {form} name="description">
-			<Form.Control let:attrs>
-				<Form.Label>Description</Form.Label>
-				<Textarea class="bg-background" {...attrs} bind:value={$formData.description} />
-			</Form.Control>
-			<Form.FieldErrors />
-		</Form.Field>
-		<div class="flex flex-col gap-2 sm:flex-row">
-			<Form.Field {form} name="doses">
-				<Form.Control let:attrs>
-					<Form.Label>No. of Doses (ml)</Form.Label>
-					<Input class="bg-background" {...attrs} bind:value={$formData.doses} />
-				</Form.Control>
-				<Form.FieldErrors />
-			</Form.Field>
-			<Form.Field {form} name="interval">
-				<Form.Control let:attrs>
-					<Form.Label>Interval (days)</Form.Label>
-					<Input class="bg-background" {...attrs} bind:value={$formData.interval} />
-				</Form.Control>
-				<Form.FieldErrors />
-			</Form.Field>
-		</div>
-		<Form.Button disabled={submitting} class="w-full items-center sm:w-[150px] " type="submit">
-			{#if submitting}
-				<DotsHorizontal class="animate-pulse " />
-			{:else}
-				Submit
-			{/if}
-		</Form.Button>
-	</form>
-</div>
+	</div>
+	<Form.Button disabled={submitting} class="w-full items-center sm:w-[150px] " type="submit">
+		{#if submitting}
+			<DotsHorizontal class="animate-pulse " />
+		{:else}
+			Submit
+		{/if}
+	</Form.Button>
+</form>

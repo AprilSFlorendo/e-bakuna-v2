@@ -15,6 +15,13 @@
       "when": 1716771494951,
       "tag": "0001_furry_mandroid",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1716800139865,
+      "tag": "0002_bitter_bloodstorm",
+      "breakpoints": true
     }
   ]
 }

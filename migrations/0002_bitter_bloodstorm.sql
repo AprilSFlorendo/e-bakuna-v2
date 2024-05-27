@@ -1,0 +1,1 @@
+ALTER TABLE `vaccines` ADD `user_id` text(100) NOT NULL;

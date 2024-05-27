@@ -8,12 +8,13 @@ import { vaccine } from '$lib/server/db/schema/vaccine';
 import { and, eq, sql, ne } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-	if (!locals.user) {
+	const user = locals.user;
+	if (!user) {
 		return redirect(302, '/login');
 	}
 
 	const entity = await db.query.vaccine.findFirst({
-		where: eq(vaccine.id, params.id)
+		where: and(eq(vaccine.id, params.id), eq(vaccine.userId, user.id))
 	});
 
 	if (!entity) {
@@ -34,6 +35,11 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 export const actions = {
 	default: async (event) => {
+		const user = event.locals.user;
+		if (!user) {
+			return fail(401);
+		}
+
 		const form = await superValidate(event, zod(schema));
 		if (!form.valid) {
 			return fail(400, {
@@ -47,7 +53,8 @@ export const actions = {
 			.where(
 				and(
 					eq(sql`lower(${vaccine.name})`, sql`lower(${form.data.name})`),
-					ne(vaccine.id, form.data.id)
+					ne(vaccine.id, form.data.id),
+					eq(vaccine.userId, user.id)
 				)
 			)
 			.execute();
@@ -64,7 +71,7 @@ export const actions = {
 				doses: form.data.doses,
 				interval: form.data.interval
 			})
-			.where(eq(vaccine.id, form.data.id))
+			.where(and(eq(vaccine.id, form.data.id), eq(vaccine.userId, user.id)))
 			.execute();
 
 		return { form };

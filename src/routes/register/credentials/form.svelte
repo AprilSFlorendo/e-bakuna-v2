@@ -49,7 +49,7 @@
 
 <div
 	use:focusTrap={true}
-	class="rounded-none flex flex-col border p-8 sm:rounded-lg dark:bg-[#141414]"
+	class="flex flex-col rounded-none border p-8 dark:bg-slate-500/10 sm:rounded-lg"
 >
 	<form
 		class="flex flex-col gap-4"
@@ -87,7 +87,7 @@
 		</Form.Button>
 
 		{#if errorMessage !== ''}
-			<p class="mt-2 text-destructive text-center">{errorMessage}</p>
+			<p class="mt-2 text-center text-destructive">{errorMessage}</p>
 		{/if}
 	</form>
 

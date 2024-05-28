@@ -72,3 +72,29 @@ export async function PUT({ request, locals }) {
 		vaccine: vac
 	});
 }
+
+export async function DELETE({ request, locals }) {
+	const user = locals.user!;
+	const { id } = await request.json();
+	const current = await db.query.schedule
+		.findFirst({
+			where: and(eq(schedule.id, id), eq(schedule.userId, user.id))
+		})
+		.execute();
+
+	if (!current) {
+		error(404, 'Animal not found');
+	}
+
+	const data = await db
+		.delete(schedule)
+		.where(and(eq(schedule.id, id), eq(schedule.userId, user.id)))
+		.returning()
+		.execute();
+
+	if (data.length === 0) {
+		error(404, 'Schedule not found');
+	}
+
+	return json(data[0]);
+}

@@ -13,14 +13,15 @@
 	import { CalendarDate } from '@internationalized/date';
 	import { Input } from '$lib/components/ui/input';
 	import { Checkbox } from '$lib/components/ui/checkbox';
-	import { Edit } from 'lucide-svelte';
+	import { Edit, Trash } from 'lucide-svelte';
 
 	export let data: PageData;
 
-	const schedules = data.schedules;
+	let schedules = data.schedules;
 	const animal = data.animal;
 
-	let dialogOpen = false;
+	let scheduleDialogOpen = false;
+	let deleteDialogOpen = false;
 	const isDesktop = mediaQuery('(min-width: 768px)');
 
 	const now = new Date();
@@ -39,7 +40,7 @@
 					value: vaccine.id,
 					label: vaccine.name
 				}));
-				dialogOpen = true;
+				scheduleDialogOpen = true;
 
 				if (selectedId === '') {
 					selectedVaccine = undefined;
@@ -71,7 +72,7 @@
 		}).then((res) => {
 			if (res.ok) {
 				toast.success('Schedule added successfully');
-				dialogOpen = false;
+				scheduleDialogOpen = false;
 			} else {
 				toast.error('Failed to add schedule');
 			}
@@ -120,7 +121,7 @@
 		const now = new Date();
 		selectedDate = new CalendarDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
 		selectedVaccine = undefined;
-		dialogOpen = false;
+		scheduleDialogOpen = false;
 	}
 
 	$: disabled = true;
@@ -132,8 +133,7 @@
 		}
 	}
 
-	async function onDone(item) {
-		const done = item.done;
+	async function onDone(checked, id) {
 		try {
 			const res = await fetch('/api/schedules/done', {
 				method: 'PUT',
@@ -141,8 +141,8 @@
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					id: item.id,
-					done: !done
+					id: id,
+					done: checked
 				})
 			});
 
@@ -165,6 +165,32 @@
 
 		selectedVaccine = item.vaccine.id;
 		openSchedule();
+	}
+
+	function openDialog(item) {
+		if (item.done) {
+			toast.error('Cannot delete a completed schedule');
+			return;
+		}
+		selectedId = item.id;
+		deleteDialogOpen = true;
+	}
+
+	async function deleteSchedule() {
+		const res = await fetch(`/api/schedules/`, {
+			method: 'DELETE',
+			body: JSON.stringify({
+				id: selectedId
+			})
+		});
+
+		if (res.ok) {
+			schedules = schedules.filter((schedule) => schedule.id !== selectedId);
+			toast.success('Schedule deleted successfully');
+		} else {
+			toast.error('Failed to delete schedule');
+		}
+		deleteDialogOpen = false;
 	}
 </script>
 
@@ -201,7 +227,8 @@
 				{#each schedules as item}
 					<Table.Row>
 						<Table.Cell>
-							<Checkbox checked={item.done} onCheckedChange={() => onDone(item)}></Checkbox>
+							<Checkbox bind:checked={item.done} onCheckedChange={(e) => onDone(e, item.id)}
+							></Checkbox>
 						</Table.Cell>
 						<Table.Cell>
 							{item.title}
@@ -209,22 +236,41 @@
 						<Table.Cell>{item.vaccine.name}</Table.Cell>
 						<Table.Cell>{new Date(item.start).toDateString()}</Table.Cell>
 						<Table.Cell>
-							<Tooltip.Root>
-								<Tooltip.Trigger asChild let:builder>
-									<Button
-										on:click={() => onEdit(item)}
-										builders={[builder]}
-										class="rounded-full"
-										variant="ghost"
-										size="icon"
-									>
-										<Edit size="16" />
-									</Button>
-								</Tooltip.Trigger>
-								<Tooltip.Content>
-									<p>Edit schedule</p>
-								</Tooltip.Content>
-							</Tooltip.Root>
+							<div class="flex gap-2">
+								<Tooltip.Root>
+									<Tooltip.Trigger asChild let:builder>
+										<Button
+											on:click={() => onEdit(item)}
+											builders={[builder]}
+											class="rounded-full"
+											variant="ghost"
+											size="icon"
+										>
+											<Edit size="16" />
+										</Button>
+									</Tooltip.Trigger>
+									<Tooltip.Content>
+										<p>Edit schedule</p>
+									</Tooltip.Content>
+								</Tooltip.Root>
+								<Tooltip.Root>
+									<Tooltip.Trigger asChild let:builder>
+										<Button
+											on:click={() => openDialog(item)}
+											disabled={item.done}
+											builders={[builder]}
+											class="rounded-full"
+											variant="ghost"
+											size="icon"
+										>
+											<Trash class="stroke-destructive" size="16" />
+										</Button>
+									</Tooltip.Trigger>
+									<Tooltip.Content>
+										<p>Delete schedule</p>
+									</Tooltip.Content>
+								</Tooltip.Root>
+							</div>
 						</Table.Cell>
 					</Table.Row>
 				{/each}
@@ -233,7 +279,7 @@
 	{/if}
 </div>
 {#if $isDesktop}
-	<Dialog.Root bind:open={dialogOpen}>
+	<Dialog.Root bind:open={scheduleDialogOpen}>
 		<Dialog.Content class="sm:max-w-[425px]">
 			<Dialog.Header>
 				<Dialog.Title>{`${animal?.name}`}</Dialog.Title>
@@ -257,7 +303,7 @@
 		</Dialog.Content>
 	</Dialog.Root>
 {:else}
-	<Drawer.Root bind:open={dialogOpen}>
+	<Drawer.Root bind:open={scheduleDialogOpen}>
 		<Drawer.Content>
 			<Drawer.Header class="text-left">
 				<Drawer.Title>{`${animal?.name}`}</Drawer.Title>
@@ -278,6 +324,39 @@
 				on:click={selectedId === '' ? submitNewSchedule : submitUpdateSchedule}
 				class="mx-4 mt-8">Submit</Button
 			>
+			<Drawer.Footer class="pt-2">
+				<Drawer.Close asChild let:builder>
+					<Button variant="outline" builders={[builder]}>Cancel</Button>
+				</Drawer.Close>
+			</Drawer.Footer>
+		</Drawer.Content>
+	</Drawer.Root>
+{/if}
+
+{#if $isDesktop}
+	<Dialog.Root bind:open={deleteDialogOpen}>
+		<Dialog.Content class="sm:max-w-[425px]">
+			<Dialog.Header>
+				<Dialog.Title>Delete Schedule</Dialog.Title>
+				<Dialog.Description>
+					Do you want to delete this schedule? This action cannot be undone.
+				</Dialog.Description>
+			</Dialog.Header>
+			<div class="flex justify-end gap-4">
+				<Button variant="destructive" on:click={deleteSchedule}>Delete</Button>
+			</div>
+		</Dialog.Content>
+	</Dialog.Root>
+{:else}
+	<Drawer.Root bind:open={deleteDialogOpen}>
+		<Drawer.Content>
+			<Drawer.Header class="text-left">
+				<Drawer.Title>Delete Animal</Drawer.Title>
+				<Drawer.Description class="mb-4">
+					Do you want to delete this animal? This action cannot be undone.
+				</Drawer.Description>
+			</Drawer.Header>
+			<Button on:click={deleteSchedule} variant="destructive" class="mx-4">Delete</Button>
 			<Drawer.Footer class="pt-2">
 				<Drawer.Close asChild let:builder>
 					<Button variant="outline" builders={[builder]}>Cancel</Button>

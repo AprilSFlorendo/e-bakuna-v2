@@ -13,7 +13,8 @@ export const load: PageServerLoad = async ({ params }) => {
 			animal: true,
 			vaccine: true
 		},
-		where: eq(schedule.animalId, params.id)
+		where: eq(schedule.animalId, params.id),
+		orderBy: (schedule, { desc }) => [desc(schedule.start)]
 	});
 
 	return {

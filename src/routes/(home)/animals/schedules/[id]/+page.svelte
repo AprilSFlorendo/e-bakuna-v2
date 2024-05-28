@@ -2,6 +2,7 @@
 	import * as Table from '$lib/components/ui/table';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Drawer from '$lib/components/ui/drawer';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { Button } from '$lib/components/ui/button';
 	import { mediaQuery } from 'svelte-legos';
 	import type { PageData } from './$types';
@@ -11,7 +12,8 @@
 	import { DatePicker } from '$lib/components/ui/date-picker';
 	import { CalendarDate } from '@internationalized/date';
 	import { Input } from '$lib/components/ui/input';
-	import { Switch } from '$lib/components/ui/switch';
+	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Edit } from 'lucide-svelte';
 
 	export let data: PageData;
 
@@ -24,11 +26,12 @@
 	const now = new Date();
 	let selectedDate = new CalendarDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
 
+	let selectedId = '';
 	let title = '';
 	let vaccines = undefined;
-	let selectedVaccine = undefined;
+	$: selectedVaccine = undefined;
 
-	function newSchedule() {
+	function openSchedule() {
 		fetch(`/api/vaccines`)
 			.then((res) => res.json())
 			.then((data) => {
@@ -37,7 +40,10 @@
 					label: vaccine.name
 				}));
 				dialogOpen = true;
-				selectedVaccine = undefined;
+
+				if (selectedId === '') {
+					selectedVaccine = undefined;
+				}
 			})
 			.catch((err) => {
 				console.error(err);
@@ -45,7 +51,7 @@
 			});
 	}
 
-	function submit() {
+	function submitNewSchedule() {
 		if (!animal) {
 			toast.error('Animal not found');
 			return;
@@ -70,6 +76,51 @@
 				toast.error('Failed to add schedule');
 			}
 		});
+
+		clearEntries();
+	}
+
+	async function submitUpdateSchedule() {
+		if (!animal) {
+			toast.error('Animal not found');
+			return;
+		}
+
+		const res = await fetch(`/api/schedules`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				id: selectedId,
+				title: title,
+				animalId: animal.id,
+				date: selectedDate.toString(),
+				vaccineId: selectedVaccine
+			})
+		});
+
+		if (res.ok) {
+			const data = await res.json();
+			const index = schedules.findIndex((schedule) => schedule.id === selectedId);
+			schedules[index] = data;
+
+			schedules.sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
+
+			toast.success('Schedule updated successfully');
+		} else {
+			toast.error('Failed to update schedule');
+		}
+
+		clearEntries();
+	}
+
+	function clearEntries() {
+		title = '';
+		const now = new Date();
+		selectedDate = new CalendarDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
+		selectedVaccine = undefined;
+		dialogOpen = false;
 	}
 
 	$: disabled = true;
@@ -80,12 +131,47 @@
 			disabled = true;
 		}
 	}
+
+	async function onDone(item) {
+		const done = item.done;
+		try {
+			const res = await fetch('/api/schedules/done', {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					id: item.id,
+					done: !done
+				})
+			});
+
+			if (res.ok) {
+				toast.success('Schedule updated successfully');
+			} else {
+				toast.error('Failed to update schedule');
+			}
+		} catch (error) {
+			console.error(error);
+			toast.error('Failed to update schedule');
+		}
+	}
+
+	function onEdit(item) {
+		selectedId = item.id;
+		title = item.title;
+		const date = new Date(item.start);
+		selectedDate = new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
+
+		selectedVaccine = item.vaccine.id;
+		openSchedule();
+	}
 </script>
 
 <div class="flex flex-col gap-4 p-0 sm:rounded-xl sm:bg-slate-500/10 sm:p-8">
 	<div class="flex items-center justify-between gap-2">
 		<h1 class="text-3xl">Vaccine Schedule</h1>
-		<Button on:click={newSchedule}>New Schedule</Button>
+		<Button on:click={openSchedule}>New Schedule</Button>
 	</div>
 	<div class="my-4 flex items-center gap-8">
 		<img
@@ -104,21 +190,42 @@
 		<Table.Root>
 			<Table.Header>
 				<Table.Row>
+					<Table.Head class="w-[50px]">Done</Table.Head>
 					<Table.Head>Title</Table.Head>
 					<Table.Head>Vaccine</Table.Head>
 					<Table.Head>Date</Table.Head>
-					<Table.Head>Done</Table.Head>
+					<Table.Head class="w-[50px]">Actions</Table.Head>
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
 				{#each schedules as item}
 					<Table.Row>
 						<Table.Cell>
+							<Checkbox checked={item.done} onCheckedChange={() => onDone(item)}></Checkbox>
+						</Table.Cell>
+						<Table.Cell>
 							{item.title}
 						</Table.Cell>
 						<Table.Cell>{item.vaccine.name}</Table.Cell>
-						<Table.Cell>{new Date(item.createdAt).toDateString()}</Table.Cell>
-						<Table.Cell><Switch checked={item.done}></Switch></Table.Cell>
+						<Table.Cell>{new Date(item.start).toDateString()}</Table.Cell>
+						<Table.Cell>
+							<Tooltip.Root>
+								<Tooltip.Trigger asChild let:builder>
+									<Button
+										on:click={() => onEdit(item)}
+										builders={[builder]}
+										class="rounded-full"
+										variant="ghost"
+										size="icon"
+									>
+										<Edit size="16" />
+									</Button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>
+									<p>Edit schedule</p>
+								</Tooltip.Content>
+							</Tooltip.Root>
+						</Table.Cell>
 					</Table.Row>
 				{/each}
 			</Table.Body>
@@ -141,7 +248,11 @@
 			<Label>Vaccine</Label>
 			<Combobox source={vaccines} bind:value={selectedVaccine} />
 			<div class="flex justify-end">
-				<Button {disabled} on:click={submit} class="mx-4 mt-8">Submit</Button>
+				<Button
+					{disabled}
+					on:click={selectedId === '' ? submitNewSchedule : submitUpdateSchedule}
+					class="mx-4 mt-8">Submit</Button
+				>
 			</div>
 		</Dialog.Content>
 	</Dialog.Root>
@@ -162,7 +273,11 @@
 				<Label>Vaccine</Label>
 				<Combobox source={vaccines} bind:value={selectedVaccine} />
 			</div>
-			<Button {disabled} class="mx-4 mt-8">Submit</Button>
+			<Button
+				{disabled}
+				on:click={selectedId === '' ? submitNewSchedule : submitUpdateSchedule}
+				class="mx-4 mt-8">Submit</Button
+			>
 			<Drawer.Footer class="pt-2">
 				<Drawer.Close asChild let:builder>
 					<Button variant="outline" builders={[builder]}>Cancel</Button>

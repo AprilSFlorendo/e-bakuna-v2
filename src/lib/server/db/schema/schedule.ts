@@ -10,7 +10,8 @@ export const schedule = sqliteTable('schedules', {
 	animalId: text('animal_id', { length: 100 }).notNull(),
 	vaccineId: text('vaccine_id', { length: 100 }).notNull(),
 	start: integer('start', { mode: 'timestamp' }).notNull(),
-	createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
+	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+	color: text('color', { length: 100 })
 });
 
 export const scheduleRelations = relations(schedule, ({ one }) => ({

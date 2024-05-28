@@ -1,5 +1,6 @@
 import { db } from '$lib/server/db';
 import { animal, schedule, vaccine } from '$lib/server/db/schema';
+import { randomColor } from '$lib/utils/helper';
 import { error, json } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 import { generateId } from 'lucia';
@@ -26,7 +27,8 @@ export async function POST({ request, locals }) {
 		vaccineId: body.vaccineId,
 		start: new Date(body.date),
 		done: false,
-		createdAt: new Date(Date.now())
+		createdAt: new Date(Date.now()),
+		color: randomColor()
 	};
 	await db.insert(schedule).values(entity).execute();
 

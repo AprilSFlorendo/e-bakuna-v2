@@ -1,0 +1,1 @@
+ALTER TABLE `schedules` ADD `color` text(100);

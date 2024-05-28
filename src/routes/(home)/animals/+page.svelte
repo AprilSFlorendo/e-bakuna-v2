@@ -6,7 +6,7 @@
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { mediaQuery } from 'svelte-legos';
 	import { Button } from '$lib/components/ui/button';
-	import { Edit, Image, MoreVertical, Trash } from 'lucide-svelte';
+	import { Edit, Image, MoreVertical, Calendar, Trash } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 
 	export let data;
@@ -104,6 +104,22 @@
 								<Tooltip.Root>
 									<Tooltip.Trigger asChild let:builder>
 										<Button
+											href={`/animals/schedules/${item.id}`}
+											builders={[builder]}
+											class="rounded-full"
+											variant="ghost"
+											size="icon"
+										>
+											<Calendar size="16" />
+										</Button>
+									</Tooltip.Trigger>
+									<Tooltip.Content>
+										<p>Open schedule</p>
+									</Tooltip.Content>
+								</Tooltip.Root>
+								<Tooltip.Root>
+									<Tooltip.Trigger asChild let:builder>
+										<Button
 											on:click={() => {
 												animalId = item.id;
 												fileinput.click();
@@ -160,6 +176,12 @@
 										</Button>
 									</DropdownMenu.Trigger>
 									<DropdownMenu.Content class="w-56">
+										<DropdownMenu.Item href={`/animals/schedules/${item.id}`}>
+											<div class="flex gap-4">
+												<Calendar size="16" />
+												Open schedule
+											</div>
+										</DropdownMenu.Item>
 										<DropdownMenu.Item
 											on:click={() => {
 												animalId = item.id;
@@ -168,19 +190,19 @@
 										>
 											<div class="flex gap-4">
 												<Image size="16" />
-												Change Image
+												Change image
 											</div>
 										</DropdownMenu.Item>
 										<DropdownMenu.Item href={`/animals/${item.id}`}>
 											<div class="flex gap-4">
 												<Edit size="16" />
-												Edit Animal
+												Edit animal
 											</div>
 										</DropdownMenu.Item>
 										<DropdownMenu.Item on:click={() => openDialog(item.id)}>
 											<div class="flex gap-4">
 												<Trash class="stroke-destructive" size="16" />
-												<p class="text-destructive">Delete Animal</p>
+												<p class="text-destructive">Delete animal</p>
 											</div>
 										</DropdownMenu.Item>
 									</DropdownMenu.Content>

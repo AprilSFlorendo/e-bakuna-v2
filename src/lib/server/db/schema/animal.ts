@@ -1,6 +1,6 @@
 import { relations } from 'drizzle-orm';
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { user } from './user';
+import { user } from './';
 
 export const animal = sqliteTable('animals', {
 	id: text('id', { length: 100 }).primaryKey(),

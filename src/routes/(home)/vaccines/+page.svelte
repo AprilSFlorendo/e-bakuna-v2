@@ -12,19 +12,23 @@
 	let vaccines = data.vaccines;
 
 	let currentId = '';
-	function deleteVaccine() {
-		fetch(`/api/vaccines/${currentId}`, {
-			method: 'DELETE'
-		})
-			.then(() => {
-				vaccines = vaccines.filter((vaccine) => vaccine.id !== currentId);
-				dialogOpen = false;
-				toast.success('Vaccine deleted successfully');
-			})
-			.catch(() => {
-				dialogOpen = false;
-				toast.error('Failed to delete vaccine');
+	async function deleteVaccine() {
+		try {
+			const res = await fetch(`/api/vaccines/${currentId}`, {
+				method: 'DELETE'
 			});
+
+			dialogOpen = false;
+
+			if (res.ok) {
+				vaccines = vaccines.filter((vaccine) => vaccine.id !== currentId);
+				toast.success('Vaccine deleted successfully');
+			} else {
+				toast.error('Failed to delete vaccine');
+			}
+		} catch (error) {
+			toast.error('Failed to delete vaccine');
+		}
 	}
 
 	function openDialog(id: string) {

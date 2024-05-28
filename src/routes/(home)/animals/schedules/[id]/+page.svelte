@@ -32,33 +32,33 @@
 	let vaccines = undefined;
 	$: selectedVaccine = undefined;
 
-	function openSchedule() {
-		fetch(`/api/vaccines`)
-			.then((res) => res.json())
-			.then((data) => {
-				vaccines = data.map((vaccine) => ({
-					value: vaccine.id,
-					label: vaccine.name
-				}));
-				scheduleDialogOpen = true;
+	async function openSchedule() {
+		try {
+			const res = await fetch(`/api/vaccines`);
 
-				if (selectedId === '') {
-					selectedVaccine = undefined;
-				}
-			})
-			.catch((err) => {
-				console.error(err);
-				toast.error('Failed to fetch vaccines');
-			});
+			const data = await res.json();
+			vaccines = data.map((x) => ({
+				value: x.id,
+				label: x.name
+			}));
+			scheduleDialogOpen = true;
+
+			if (selectedId === '') {
+				selectedVaccine = undefined;
+			}
+		} catch (error) {
+			console.error(error);
+			toast.error('Failed to fetch vaccines');
+		}
 	}
 
-	function submitNewSchedule() {
+	async function submitNewSchedule() {
 		if (!animal) {
 			toast.error('Animal not found');
 			return;
 		}
 
-		fetch(`/api/schedules`, {
+		const res = await fetch(`/api/schedules`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -69,14 +69,14 @@
 				date: selectedDate.toString(),
 				vaccineId: selectedVaccine
 			})
-		}).then((res) => {
-			if (res.ok) {
-				toast.success('Schedule added successfully');
-				scheduleDialogOpen = false;
-			} else {
-				toast.error('Failed to add schedule');
-			}
 		});
+
+		if (res.ok) {
+			toast.success('Schedule added successfully');
+			scheduleDialogOpen = false;
+		} else {
+			toast.error('Failed to add schedule');
+		}
 
 		clearEntries();
 	}

@@ -4,7 +4,7 @@ import { schedule } from '$lib/server/db/schema';
 import { error, json } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 
-export async function PUT({ request, cookies }) {
+export async function PUT({ request, cookies, locals }) {
 	const sessionId = cookies.get(lucia.sessionCookieName);
 
 	if (!sessionId) {
@@ -16,6 +16,8 @@ export async function PUT({ request, cookies }) {
 		error(401, 'Unauthorized');
 	}
 	const body = await request.json();
+
+	console.log('locals', locals.user);
 
 	await db
 		.update(schedule)

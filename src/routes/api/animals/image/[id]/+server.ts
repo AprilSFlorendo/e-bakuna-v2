@@ -1,22 +1,11 @@
-import { lucia } from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import { animal } from '$lib/server/db/schema';
 import { cloudinary, upload } from '$lib/upload/cloudinary';
 import { error, json } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 
-export async function POST({ request, cookies, params }) {
+export async function POST({ request, locals, params }) {
 	try {
-		const sessionId = cookies.get(lucia.sessionCookieName);
-
-		if (!sessionId) {
-			error(401, 'Unauthorized');
-		}
-
-		const { user } = await lucia.validateSession(sessionId);
-		if (!user) {
-			error(401, 'Unauthorized');
-		}
 		const id = params.id;
 		const file = await request.blob();
 
@@ -25,6 +14,7 @@ export async function POST({ request, cookies, params }) {
 			error(500, uploadResult.error);
 		}
 
+		const user = locals.user!;
 		const currentAnimal = await db.query.animal.findFirst({
 			where: and(eq(animal.id, id), eq(animal.userId, user.id))
 		});

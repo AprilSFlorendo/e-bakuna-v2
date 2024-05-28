@@ -1,11 +1,15 @@
 import { lucia } from '$lib/server/auth';
-import { redirect, type Handle } from '@sveltejs/kit';
+import { error, redirect, type Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const sessionId = event.cookies.get(lucia.sessionCookieName);
 	if (!sessionId) {
 		event.locals.user = null;
 		event.locals.session = null;
+
+		if (event.url.pathname.includes('/api')) {
+			error(401, 'Unauthorized');
+		}
 
 		if (event.url.pathname.includes('/login') || event.url.pathname.includes('/register')) {
 			return resolve(event);
@@ -15,6 +19,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	const { session, user } = await lucia.validateSession(sessionId);
+	if (event.url.pathname.includes('/api') && !user) {
+		error(401, 'Unauthorized');
+	}
+
 	if (session && session.fresh) {
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		event.cookies.set(sessionCookie.name, sessionCookie.value, {

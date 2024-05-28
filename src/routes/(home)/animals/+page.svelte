@@ -2,9 +2,11 @@
 	import * as Table from '$lib/components/ui/table';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Drawer from '$lib/components/ui/drawer';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { mediaQuery } from 'svelte-legos';
 	import { Button } from '$lib/components/ui/button';
-	import { Edit, Image, Trash } from 'lucide-svelte';
+	import { Edit, Image, MoreVertical, Trash } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 
 	export let data;
@@ -96,30 +98,94 @@
 					</Table.Cell>
 					<Table.Cell>{item.name}</Table.Cell>
 					<Table.Cell class="hidden md:table-cell">{item.details}</Table.Cell>
-					<Table.Cell class="w-[100px]">
-						<div class="flex gap-2">
-							<Button
-								on:click={() => {
-									animalId = item.id;
-									fileinput.click();
-								}}
-								class="rounded-full"
-								variant="ghost"
-								size="icon"
-							>
-								<Image size="16" />
-							</Button>
-							<Button href={`/animals/${item.id}`} class="rounded-full" variant="ghost" size="icon">
-								<Edit size="16" />
-							</Button>
-							<Button
-								on:click={() => openDialog(item.id)}
-								class="rounded-full"
-								variant="ghost"
-								size="icon"
-							>
-								<Trash class="stroke-destructive" size="16" />
-							</Button>
+					<Table.Cell>
+						<div class="flex justify-center gap-2">
+							{#if $isDesktop}
+								<Tooltip.Root>
+									<Tooltip.Trigger asChild let:builder>
+										<Button
+											on:click={() => {
+												animalId = item.id;
+												fileinput.click();
+											}}
+											builders={[builder]}
+											class="rounded-full"
+											variant="ghost"
+											size="icon"
+										>
+											<Image size="16" />
+										</Button>
+									</Tooltip.Trigger>
+									<Tooltip.Content>
+										<p>Change image</p>
+									</Tooltip.Content>
+								</Tooltip.Root>
+								<Tooltip.Root>
+									<Tooltip.Trigger asChild let:builder>
+										<Button
+											builders={[builder]}
+											href={`/animals/${item.id}`}
+											class="rounded-full"
+											variant="ghost"
+											size="icon"
+										>
+											<Edit size="16" />
+										</Button>
+									</Tooltip.Trigger>
+									<Tooltip.Content>
+										<p>Edit animal</p>
+									</Tooltip.Content>
+								</Tooltip.Root>
+								<Tooltip.Root>
+									<Tooltip.Trigger asChild let:builder>
+										<Button
+											on:click={() => openDialog(item.id)}
+											builders={[builder]}
+											class="rounded-full"
+											variant="ghost"
+											size="icon"
+										>
+											<Trash class="stroke-destructive" size="16" />
+										</Button>
+									</Tooltip.Trigger>
+									<Tooltip.Content>
+										<p>Delete animal</p>
+									</Tooltip.Content>
+								</Tooltip.Root>
+							{:else}
+								<DropdownMenu.Root>
+									<DropdownMenu.Trigger asChild let:builder>
+										<Button variant="ghost" size="icon" class="rounded-full" builders={[builder]}>
+											<MoreVertical size="16" />
+										</Button>
+									</DropdownMenu.Trigger>
+									<DropdownMenu.Content class="w-56">
+										<DropdownMenu.Item
+											on:click={() => {
+												animalId = item.id;
+												fileinput.click();
+											}}
+										>
+											<div class="flex gap-4">
+												<Image size="16" />
+												Change Image
+											</div>
+										</DropdownMenu.Item>
+										<DropdownMenu.Item href={`/animals/${item.id}`}>
+											<div class="flex gap-4">
+												<Edit size="16" />
+												Edit Animal
+											</div>
+										</DropdownMenu.Item>
+										<DropdownMenu.Item on:click={() => openDialog(item.id)}>
+											<div class="flex gap-4">
+												<Trash class="stroke-destructive" size="16" />
+												<p class="text-destructive">Delete Animal</p>
+											</div>
+										</DropdownMenu.Item>
+									</DropdownMenu.Content>
+								</DropdownMenu.Root>
+							{/if}
 						</div>
 					</Table.Cell>
 				</Table.Row>

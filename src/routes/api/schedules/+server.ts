@@ -19,20 +19,31 @@ export async function POST({ request, locals }) {
 		error(404, 'Animal not found');
 	}
 
-	const entity = {
-		id: generateId(40),
-		title: body.title,
-		userId: user.id,
-		animalId: body.animalId,
-		vaccineId: body.vaccineId,
-		start: new Date(body.date),
-		done: false,
-		createdAt: new Date(Date.now()),
-		color: randomColor()
-	};
-	await db.insert(schedule).values(entity).execute();
+	const data = await db
+		.insert(schedule)
+		.values({
+			id: generateId(40),
+			title: body.title,
+			userId: user.id,
+			animalId: body.animalId,
+			vaccineId: body.vaccineId,
+			start: new Date(body.date),
+			done: false,
+			createdAt: new Date(Date.now()),
+			color: randomColor()
+		})
+		.returning()
+		.execute();
 
-	return json(entity);
+	const result = data[0];
+	const vac = await db.query.vaccine
+		.findFirst({ where: eq(vaccine.id, result.vaccineId) })
+		.execute();
+
+	return json({
+		...result,
+		vaccine: vac
+	});
 }
 
 export async function PUT({ request, locals }) {

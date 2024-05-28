@@ -72,8 +72,11 @@
 		});
 
 		if (res.ok) {
+			const data = await res.json();
+			schedules = [data, ...schedules];
+			schedules.sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
+
 			toast.success('Schedule added successfully');
-			scheduleDialogOpen = false;
 		} else {
 			toast.error('Failed to add schedule');
 		}
@@ -117,6 +120,7 @@
 	}
 
 	function clearEntries() {
+		selectedId = '';
 		title = '';
 		const now = new Date();
 		selectedDate = new CalendarDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
@@ -131,6 +135,11 @@
 		} else {
 			disabled = true;
 		}
+	}
+
+	function onAdd() {
+		clearEntries();
+		openSchedule();
 	}
 
 	async function onDone(checked, id) {
@@ -197,7 +206,7 @@
 <div class="flex flex-col gap-4 p-0 sm:rounded-xl sm:bg-slate-500/10 sm:p-8">
 	<div class="flex items-center justify-between gap-2">
 		<h1 class="text-3xl">Vaccine Schedule</h1>
-		<Button on:click={openSchedule}>New Schedule</Button>
+		<Button on:click={onAdd}>New Schedule</Button>
 	</div>
 	<div class="my-4 flex items-center gap-8">
 		<img

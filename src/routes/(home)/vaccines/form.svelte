@@ -49,7 +49,7 @@
 	<Form.Field class="hidden" {form} name="id">
 		<Form.Control let:attrs>
 			<Form.Label>Id</Form.Label>
-			<Input class="bg-background" {...attrs} bind:value={$formData.id} />
+			<Input tabindex={-1} class="bg-background" {...attrs} bind:value={$formData.id} />
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>

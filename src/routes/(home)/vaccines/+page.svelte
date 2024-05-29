@@ -24,7 +24,8 @@
 				vaccines = vaccines.filter((vaccine) => vaccine.id !== currentId);
 				toast.success('Vaccine deleted successfully');
 			} else {
-				toast.error('Failed to delete vaccine');
+				const data = await res.json();
+				toast.error(data.message);
 			}
 		} catch (error) {
 			toast.error('Failed to delete vaccine');

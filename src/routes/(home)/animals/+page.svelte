@@ -15,19 +15,24 @@
 	let animals = data.animals;
 
 	let currentId = '';
-	function deleteAnimal() {
-		fetch(`/api/animals/${currentId}`, {
-			method: 'DELETE'
-		})
-			.then(() => {
-				animals = animals.filter((animal) => animal.id !== currentId);
-				dialogOpen = false;
-				toast.success('Animal deleted successfully');
-			})
-			.catch(() => {
-				dialogOpen = false;
-				toast.error('Failed to delete animal');
+	async function deleteAnimal() {
+		try {
+			const res = await fetch(`/api/animals/${currentId}`, {
+				method: 'DELETE'
 			});
+
+			if (res.ok) {
+				animals = animals.filter((animal) => animal.id !== currentId);
+				toast.success('Animal deleted successfully');
+			} else {
+				const data = await res.json();
+				toast.error(data.message);
+			}
+		} catch (error) {
+			toast.error('Failed to delete animal');
+		}
+
+		dialogOpen = false;
 	}
 
 	function openDialog(id: string) {

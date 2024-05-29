@@ -99,6 +99,10 @@ export async function DELETE({ request, locals }) {
 		error(404, 'Animal not found');
 	}
 
+	if (current.done) {
+		error(400, 'Cannot delete a schedule that is already done');
+	}
+
 	const data = await db
 		.delete(schedule)
 		.where(and(eq(schedule.id, id), eq(schedule.userId, user.id)))

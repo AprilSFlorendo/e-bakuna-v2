@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { animal } from '$lib/server/db/schema';
+import { animal, schedule } from '$lib/server/db/schema';
 import { cloudinary } from '$lib/upload/cloudinary';
 import { error, json } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
@@ -12,6 +12,11 @@ export async function DELETE({ locals, params }) {
 
 	if (!current) {
 		error(404, 'Animal not found');
+	}
+
+	const inUsed = await db.query.schedule.findFirst({ where: eq(schedule.animalId, params.id) });
+	if (inUsed) {
+		error(400, 'Cannot delete an animal that is in use');
 	}
 
 	await db.delete(animal).where(eq(animal.id, params.id));

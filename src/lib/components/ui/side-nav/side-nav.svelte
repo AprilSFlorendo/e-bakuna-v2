@@ -23,12 +23,7 @@
 		'p-4 py-3 rounded-xl transition-all duration-300 hover:bg-gray-200 hover:bg-opacity-10 hover:text-white';
 </script>
 
-<aside
-	class={cn(
-		'sticky top-12 flex h-[100vh] max-h-[calc(100vh-3.7rem)] flex-col gap-2 overflow-y-auto',
-		className
-	)}
->
+<aside class={cn('flex flex-col gap-2 overflow-y-auto', className)}>
 	<nav class="flex flex-grow flex-col gap-2">
 		<a class={`${navStyles} ${handleNavSelection('/home')}`} href="/">
 			<div class="flex gap-2">

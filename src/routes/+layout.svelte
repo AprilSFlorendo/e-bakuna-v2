@@ -6,7 +6,7 @@
 
 <ModeWatcher defaultMode="dark" />
 <Toaster />
-<body class="h-screen w-full">
+<body class="overflow-hidden">
 	<slot />
 </body>
 

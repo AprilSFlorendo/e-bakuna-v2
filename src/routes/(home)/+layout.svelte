@@ -12,19 +12,15 @@
 	};
 </script>
 
-<container class="flex min-h-[100vh] flex-col">
-	<NavBar {user} />
-	<div class="flex h-full w-full flex-grow flex-row overflow-auto">
-		<section
-			class="w-0 border-r opacity-0 transition-all duration-300 motion-reduce:transition-none sm:w-[250px] sm:opacity-100"
-		>
-			<SideNav class="w-[250px] overflow-x-hidden p-6 " />
-		</section>
-		<div class="sm:p4 flex flex-grow flex-col overflow-hidden p-6 py-4 sm:px-2">
-			<div class="m-0 flex-grow sm:m-2 sm:mx-4">
-				<slot />
-			</div>
-			<Footer />
+<container class="grid h-[100vh] grid-cols-[min-content_1fr] grid-rows-[3.5rem_1fr]">
+	<NavBar class="col-span-2 col-start-1 row-start-1" {user} />
+	<SideNav
+		class="col-start-1 row-start-2 h-full w-0 overflow-x-hidden border-r px-0 py-6 transition-all duration-300 sm:w-[250px] sm:p-6"
+	/>
+	<div class="col-start-2 row-start-2 flex h-full flex-col overflow-y-auto">
+		<div class="flex-grow p-4">
+			<slot />
 		</div>
+		<Footer />
 	</div>
 </container>

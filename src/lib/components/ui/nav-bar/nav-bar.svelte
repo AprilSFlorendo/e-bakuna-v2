@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import Logo from '$lib/assets/favicon.webp';
 	import { Button } from '$lib/components/ui/button';
 	import { SideNav } from '$lib/components/ui/side-nav';
-	import Separator from '../separator/separator.svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
+	import { cn } from '$lib/utils';
 
 	export let user: {
 		firstName: string;
@@ -14,32 +14,47 @@
 		avatarUrl: string;
 	};
 
-	$: openSheet = false;
+	type $$Props = HTMLAttributes<HTMLDivElement> & { user };
+	let className: $$Props['class'] = undefined;
 
-	$: {
-		if ($page) {
-			openSheet = false;
-		}
-	}
+	export { className as class };
 </script>
 
 <header
-	class="sticky top-0 z-10 flex h-14 w-full justify-between border-b bg-background/75 p-4 backdrop-blur"
+	class={cn(
+		'flex h-14 w-full justify-between border-b bg-background/75 p-4 backdrop-blur',
+		className
+	)}
 >
 	<div class="flex items-center gap-4">
-		<Button class="block px-2 sm:hidden" variant="ghost" on:click={() => (openSheet = true)}>
-			<svg
-				width="24"
-				height="24"
-				viewBox="0 0 24 24"
-				class="stroke-white"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<path d="M4 18H10" stroke-width="2" stroke-linecap="round" />
-				<path d="M4 12L16 12" stroke-width="2" stroke-linecap="round" />
-				<path d="M4 6L20 6" stroke-width="2" stroke-linecap="round" />
-			</svg>
-		</Button>
+		<Sheet.Root>
+			<Sheet.Trigger asChild let:builder>
+				<Button builders={[builder]} class="block px-2 sm:hidden" variant="ghost">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						class="stroke-white"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path d="M4 18H10" stroke-width="2" stroke-linecap="round" />
+						<path d="M4 12L16 12" stroke-width="2" stroke-linecap="round" />
+						<path d="M4 6L20 6" stroke-width="2" stroke-linecap="round" />
+					</svg>
+				</Button>
+			</Sheet.Trigger>
+			<Sheet.Content class="w-[250px]" side="left">
+				<Sheet.Header>
+					<Sheet.Title>
+						<div class="flex w-[250px] items-center gap-2">
+							<img src={Logo} alt="default logo" width="20" height="20" />
+							<p class="text-xl font-semibold">E-Bakuna</p>
+						</div>
+					</Sheet.Title>
+				</Sheet.Header>
+				<SideNav class="py-6" />
+			</Sheet.Content>
+		</Sheet.Root>
 		<div class="flex w-[250px] items-center gap-4">
 			<img src={Logo} alt="default logo" width="20" height="20" />
 			<p class="text-xl font-semibold">E-Bakuna</p>
@@ -68,17 +83,3 @@
 		</DropdownMenu.Root>
 	</div>
 </header>
-
-<Sheet.Root bind:open={openSheet}>
-	<Sheet.Content class="w-[250px]" side="left">
-		<Sheet.Header>
-			<Sheet.Title>
-				<div class="flex w-[250px] items-center gap-2">
-					<img src={Logo} alt="default logo" width="20" height="20" />
-					<p class="text-xl font-semibold">E-Bakuna</p>
-				</div>
-			</Sheet.Title>
-		</Sheet.Header>
-		<SideNav class="py-6" />
-	</Sheet.Content>
-</Sheet.Root>

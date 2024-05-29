@@ -52,7 +52,7 @@
 						</div>
 					</Sheet.Title>
 				</Sheet.Header>
-				<SideNav class="py-6" />
+				<SideNav class="h-full py-6" />
 			</Sheet.Content>
 		</Sheet.Root>
 		<div class="flex w-[250px] items-center gap-4">

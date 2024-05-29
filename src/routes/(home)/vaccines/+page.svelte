@@ -2,6 +2,7 @@
 	import * as Table from '$lib/components/ui/table';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Drawer from '$lib/components/ui/drawer';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { mediaQuery } from 'svelte-legos';
 	import { Button } from '$lib/components/ui/button';
 	import { Edit, Trash } from 'lucide-svelte';
@@ -65,22 +66,38 @@
 					<Table.Cell class="text-center">{item.interval}</Table.Cell>
 					<Table.Cell class="w-[100px]">
 						<div class="flex gap-2">
-							<Button
-								href={`/vaccines/${item.id}`}
-								class="rounded-full"
-								variant="ghost"
-								size="icon"
-							>
-								<Edit size="16" />
-							</Button>
-							<Button
-								on:click={() => openDialog(item.id)}
-								class="rounded-full"
-								variant="ghost"
-								size="icon"
-							>
-								<Trash class="stroke-destructive" size="16" />
-							</Button>
+							<Tooltip.Root>
+								<Tooltip.Trigger asChild let:builder>
+									<Button
+										builders={[builder]}
+										href={`/vaccines/${item.id}`}
+										class="rounded-full"
+										variant="ghost"
+										size="icon"
+									>
+										<Edit size="16" />
+									</Button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>
+									<p>Edit vaccine</p>
+								</Tooltip.Content>
+							</Tooltip.Root>
+							<Tooltip.Root>
+								<Tooltip.Trigger asChild let:builder>
+									<Button
+										builders={[builder]}
+										on:click={() => openDialog(item.id)}
+										class="rounded-full"
+										variant="ghost"
+										size="icon"
+									>
+										<Trash class="stroke-destructive" size="16" />
+									</Button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>
+									<p>Delete vaccine</p>
+								</Tooltip.Content>
+							</Tooltip.Root>
 						</div>
 					</Table.Cell>
 				</Table.Row>

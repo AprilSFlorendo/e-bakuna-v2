@@ -180,36 +180,40 @@
 											<MoreVertical size="16" />
 										</Button>
 									</DropdownMenu.Trigger>
-									<DropdownMenu.Content class="w-56">
-										<DropdownMenu.Item href={`/animals/schedules/${item.id}`}>
-											<div class="flex gap-4">
-												<Calendar size="16" />
-												Open schedule
-											</div>
-										</DropdownMenu.Item>
-										<DropdownMenu.Item
-											on:click={() => {
-												animalId = item.id;
-												fileinput.click();
-											}}
-										>
-											<div class="flex gap-4">
-												<Image size="16" />
-												Change image
-											</div>
-										</DropdownMenu.Item>
-										<DropdownMenu.Item href={`/animals/${item.id}`}>
-											<div class="flex gap-4">
-												<Edit size="16" />
-												Edit animal
-											</div>
-										</DropdownMenu.Item>
-										<DropdownMenu.Item on:click={() => openDialog(item.id)}>
-											<div class="flex gap-4">
-												<Trash class="stroke-destructive" size="16" />
-												<p class="text-destructive">Delete animal</p>
-											</div>
-										</DropdownMenu.Item>
+									<DropdownMenu.Content>
+										<DropdownMenu.Label>Actions</DropdownMenu.Label>
+										<DropdownMenu.Separator />
+										<div class="flex flex-col gap-2">
+											<DropdownMenu.Item href={`/animals/schedules/${item.id}`}>
+												<div class="flex gap-4">
+													<Calendar size="16" />
+													Open schedule
+												</div>
+											</DropdownMenu.Item>
+											<DropdownMenu.Item
+												on:click={() => {
+													animalId = item.id;
+													fileinput.click();
+												}}
+											>
+												<div class="flex gap-4">
+													<Image size="16" />
+													Change image
+												</div>
+											</DropdownMenu.Item>
+											<DropdownMenu.Item href={`/animals/${item.id}`}>
+												<div class="flex gap-4">
+													<Edit size="16" />
+													Edit animal
+												</div>
+											</DropdownMenu.Item>
+											<DropdownMenu.Item on:click={() => openDialog(item.id)}>
+												<div class="flex gap-4">
+													<Trash class="stroke-destructive" size="16" />
+													<p class="text-destructive">Delete animal</p>
+												</div>
+											</DropdownMenu.Item>
+										</div>
 									</DropdownMenu.Content>
 								</DropdownMenu.Root>
 							{/if}

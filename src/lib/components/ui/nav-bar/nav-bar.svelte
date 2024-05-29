@@ -29,7 +29,7 @@
 	<div class="flex items-center gap-4">
 		<Sheet.Root>
 			<Sheet.Trigger asChild let:builder>
-				<Button builders={[builder]} class="block px-2 sm:hidden" variant="ghost">
+				<Button builders={[builder]} class="inline px-2 md:hidden" variant="ghost">
 					<svg
 						width="24"
 						height="24"

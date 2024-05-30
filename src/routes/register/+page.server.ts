@@ -10,7 +10,6 @@ import { eq } from 'drizzle-orm';
 import { user } from '$lib/server/db/schema';
 import { Argon2id } from 'oslo/password';
 import { generateId } from 'lucia';
-import { lucia } from '$lib/server/auth';
 
 export const load: PageServerLoad = async () => {
 	return {
@@ -78,13 +77,6 @@ export const actions: Actions = {
 			avatarUrl: ''
 		});
 
-		const session = await lucia.createSession(id, {});
-		const sessionCookie = lucia.createSessionCookie(session.id);
-		event.cookies.set(sessionCookie.name, sessionCookie.value, {
-			path: '.',
-			...sessionCookie.attributes
-		});
-
-		return redirect(302, '/');
+		return redirect(302, '/login');
 	}
 };

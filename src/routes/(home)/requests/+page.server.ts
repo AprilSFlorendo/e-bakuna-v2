@@ -8,7 +8,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const requests = await db.query.request.findMany({
 		with: { vaccine: true },
-		where: eq(request.userId, user.id)
+		where: eq(request.userId, user.id),
+		orderBy: (request, { desc }) => desc(request.ticketNumber)
 	});
 
 	return { requests };

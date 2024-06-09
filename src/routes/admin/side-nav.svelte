@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { cn } from '$lib/utils';
-	import { LayoutDashboard, Syringe } from 'lucide-svelte';
+	import { LayoutDashboard, Syringe, BookCheckIcon } from 'lucide-svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	$: handleNavSelection = (url: string) => {
@@ -34,6 +34,12 @@
 			<div class="flex gap-2">
 				<Syringe />
 				Vaccines
+			</div>
+		</a>
+		<a class={`${navStyles} ${handleNavSelection('/admin/requests')}`} href="/admin/requests">
+			<div class="flex gap-2">
+				<BookCheckIcon />
+				Open Requests
 			</div>
 		</a>
 	</nav>

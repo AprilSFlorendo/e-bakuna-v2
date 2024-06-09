@@ -2,7 +2,13 @@
 	import { page } from '$app/stores';
 	import { Separator } from '$lib/components/ui/separator';
 	import { cn } from '$lib/utils';
-	import { LayoutDashboard, MessageCircleHeart, PiggyBank, Syringe } from 'lucide-svelte';
+	import {
+		BookCheckIcon,
+		LayoutDashboard,
+		MessageCircleHeart,
+		PiggyBank,
+		Syringe
+	} from 'lucide-svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	$: handleNavSelection = (url: string) => {
@@ -29,6 +35,12 @@
 			<div class="flex gap-2">
 				<LayoutDashboard />
 				Dashboard
+			</div>
+		</a>
+		<a class={`${navStyles} ${handleNavSelection('/requests')}`} href="/requests">
+			<div class="flex gap-2">
+				<BookCheckIcon />
+				My Requests
 			</div>
 		</a>
 	</nav>

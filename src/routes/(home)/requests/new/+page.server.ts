@@ -1,0 +1,62 @@
+import { redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+import { fail, superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { schema } from '../schema';
+import { db } from '$lib/server/db';
+import { generateId } from 'lucia';
+import { request } from '$lib/server/db/schema/request';
+import { CalendarDate } from '@internationalized/date';
+
+export const load: PageServerLoad = async ({ locals }) => {
+	if (!locals.user) {
+		return redirect(302, '/login');
+	}
+
+	const vaccines = await db.query.vaccine.findMany({
+		orderBy: (vaccine, { asc }) => asc(vaccine.name)
+	});
+
+	const form = await superValidate(zod(schema));
+	const date = new Date();
+	form.data.date = new CalendarDate(date.getFullYear(), date.getMonth(), date.getDate()).toString();
+	form.data.shots = 1;
+
+	return {
+		form,
+		vaccines: vaccines.map((vaccine) => ({
+			value: vaccine.id,
+			label: vaccine.name
+		}))
+	};
+};
+
+export const actions: Actions = {
+	default: async (event) => {
+		const user = event.locals.user;
+		if (!user) {
+			return fail(401);
+		}
+
+		const form = await superValidate(event, zod(schema));
+		if (!form.valid) {
+			return fail(401, { form });
+		}
+
+		console.log(form.data);
+
+		await db.insert(request).values({
+			id: generateId(40),
+			date: new Date(form.data.date),
+			vaccineId: form.data.vaccine,
+			createdAt: new Date(Date.now()),
+			shots: form.data.shots,
+			status: 'pending',
+			userId: user.id
+		});
+
+		return {
+			form
+		};
+	}
+};

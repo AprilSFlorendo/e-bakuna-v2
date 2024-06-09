@@ -57,6 +57,20 @@
       "when": 1717902005108,
       "tag": "0007_clear_hannibal_king",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1717907439788,
+      "tag": "0008_flashy_robbie_robertson",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1717907650691,
+      "tag": "0009_stormy_carnage",
+      "breakpoints": true
     }
   ]
 }

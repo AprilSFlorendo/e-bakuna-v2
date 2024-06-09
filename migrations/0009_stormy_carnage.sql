@@ -1,0 +1,1 @@
+ALTER TABLE `requests` ADD `status` text NOT NULL;

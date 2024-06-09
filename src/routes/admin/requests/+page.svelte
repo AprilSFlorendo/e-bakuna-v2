@@ -4,10 +4,11 @@
 	import { Button } from '$lib/components/ui/button';
 	import { BanIcon, CheckIcon, Hand, MoreVerticalIcon, ThumbsUpIcon } from 'lucide-svelte';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
+	import { toast } from 'svelte-sonner';
 
 	export let data;
 
-	const { requests } = data;
+	let { requests } = data;
 
 	function toBgColor(status) {
 		switch (status) {
@@ -23,6 +24,46 @@
 				return 'bg-destructive text-white';
 			default:
 				return 'bg-grey-500 font-semibold';
+		}
+	}
+
+	async function handelActions(id, status) {
+		const response = await fetch(`/admin/requests/set-status/${id}`, {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				status
+			})
+		});
+
+		if (response.ok) {
+			requests = requests.map((request) => {
+				if (request.id === id) {
+					request.status = status;
+				}
+				return request;
+			});
+
+			switch (status) {
+				case 'on-hold':
+					toast.info('Request put on hold');
+					break;
+				case 'approved':
+					toast.success('Request approved');
+					break;
+				case 'completed':
+					toast.success('Request marked as completed');
+					break;
+				case 'cancelled':
+					toast.error('Request cancelled');
+					break;
+				default:
+					break;
+			}
+		} else {
+			toast.error('Failed to update request');
 		}
 	}
 </script>
@@ -71,20 +112,32 @@
 								<DropdownMenu.Label>Actions</DropdownMenu.Label>
 								<DropdownMenu.Separator />
 								<div class="flex flex-col gap-2">
-									<DropdownMenu.Item class="flex gap-4">
+									<DropdownMenu.Item
+										class="flex gap-4"
+										on:click={() => handelActions(request.id, 'on-hold')}
+									>
 										<Hand size="16" />
 										Put on hold
 									</DropdownMenu.Item>
-									<DropdownMenu.Item class="flex gap-4">
+									<DropdownMenu.Item
+										class="flex gap-4"
+										on:click={() => handelActions(request.id, 'approved')}
+									>
 										<ThumbsUpIcon size="16" />
 										Approve request
 									</DropdownMenu.Item>
-									<DropdownMenu.Item class="flex gap-4">
+									<DropdownMenu.Item
+										class="flex gap-4"
+										on:click={() => handelActions(request.id, 'completed')}
+									>
 										<CheckIcon size="16" />
 										Mark as completed
 									</DropdownMenu.Item>
 									<Separator />
-									<DropdownMenu.Item class="flex gap-4 text-destructive">
+									<DropdownMenu.Item
+										class="flex gap-4 text-destructive"
+										on:click={() => handelActions(request.id, 'cancelled')}
+									>
 										<BanIcon size="16" />
 										Cancel request
 									</DropdownMenu.Item>

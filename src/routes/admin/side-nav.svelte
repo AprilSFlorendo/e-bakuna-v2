@@ -9,7 +9,7 @@
 			return 'bg-primary bg-opacity-75 text-black font-bold';
 		}
 
-		const inPath = $page.url.toString().includes(url);
+		const inPath = $page.url.pathname.startsWith(url) && url !== '/admin';
 		return inPath ? 'bg-primary bg-opacity-75 text-black font-semibold' : '';
 	};
 

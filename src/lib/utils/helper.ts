@@ -5,3 +5,10 @@ export function randomColor() {
 	}
 	return color;
 }
+
+export function suppressDefault(handler) {
+	return function (event) {
+		event.preventDefault();
+		handler(event);
+	};
+}

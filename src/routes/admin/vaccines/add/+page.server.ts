@@ -50,7 +50,8 @@ export const actions = {
 			name: form.data.name,
 			description: form.data.description,
 			doses: form.data.doses,
-			interval: form.data.interval
+			interval: form.data.interval,
+			available: form.data.available
 		});
 
 		return { form };

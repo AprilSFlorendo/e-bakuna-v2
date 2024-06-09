@@ -54,6 +54,7 @@
 				<Table.Head>Description</Table.Head>
 				<Table.Head class="text-center">No. of Doses (ml)</Table.Head>
 				<Table.Head class="text-center">Interval(days)</Table.Head>
+				<Table.Head class="text-center">Available</Table.Head>
 				<Table.Head class="w-[100px]">Actions</Table.Head>
 			</Table.Row>
 		</Table.Header>
@@ -64,13 +65,14 @@
 					<Table.Cell>{item.description}</Table.Cell>
 					<Table.Cell class="text-center">{item.doses}</Table.Cell>
 					<Table.Cell class="text-center">{item.interval}</Table.Cell>
+					<Table.Cell class="text-center">{item.available?.toLocaleString()}</Table.Cell>
 					<Table.Cell class="w-[100px]">
 						<div class="flex gap-2">
 							<Tooltip.Root>
 								<Tooltip.Trigger asChild let:builder>
 									<Button
 										builders={[builder]}
-										href={`/vaccines/${item.id}`}
+										href={`/admin/vaccines/${item.id}`}
 										class="rounded-full"
 										variant="ghost"
 										size="icon"

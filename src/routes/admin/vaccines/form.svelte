@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { schema, type Schema } from './schema';
-	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
+	import SuperDebug, { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
 	import * as Form from '$lib/components/ui/form';
@@ -9,6 +9,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { DotsHorizontal } from 'svelte-radix';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import { QuantityToggler } from '$lib/components/ui/quantity-toggler';
 
 	export let data: SuperValidated<Infer<Schema>>;
 	export let editing = false;
@@ -64,6 +65,13 @@
 		<Form.Control let:attrs>
 			<Form.Label>Description</Form.Label>
 			<Textarea class="bg-background" {...attrs} bind:value={$formData.description} />
+		</Form.Control>
+		<Form.FieldErrors />
+	</Form.Field>
+	<Form.Field {form} name="available">
+		<Form.Control let:attrs>
+			<Form.Label>Available Stocks</Form.Label>
+			<QuantityToggler {...attrs} bind:value={$formData.available} />
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>

@@ -28,6 +28,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	form.data.description = entity.description;
 	form.data.doses = entity.doses;
 	form.data.interval = entity.interval;
+	form.data.available = entity.available ?? 0;
 	return {
 		form
 	};
@@ -69,7 +70,8 @@ export const actions = {
 				name: form.data.name,
 				description: form.data.description,
 				doses: form.data.doses,
-				interval: form.data.interval
+				interval: form.data.interval,
+				available: form.data.available
 			})
 			.where(and(eq(vaccine.id, form.data.id), eq(vaccine.userId, user.id)))
 			.execute();

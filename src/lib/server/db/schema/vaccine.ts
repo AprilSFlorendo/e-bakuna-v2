@@ -8,6 +8,7 @@ export const vaccine = sqliteTable('vaccines', {
 	description: text('description', { length: 255 }).notNull(),
 	doses: integer('doses').notNull(),
 	interval: integer('interval').notNull(),
+	available: integer('available'),
 	userId: text('user_id', { length: 100 }).notNull()
 });
 

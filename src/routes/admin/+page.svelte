@@ -13,30 +13,26 @@
 		view: 'dayGridMonth',
 		events: schedules.map((schedule) => {
 			return {
-				start: schedule.start,
-				end: schedule.start,
+				start: schedule.date,
+				end: schedule.date,
 				title: JSON.stringify({
-					title: schedule.title,
-					animal: schedule.animal.name,
+					number: schedule.ticketNumber,
 					vaccine: schedule.vaccine.name,
-					done: schedule.done
+					shots: schedule.shots,
+					status: schedule.status
 				}),
-				description: schedule.title,
-				backgroundColor: schedule.color,
-				id: schedule.animal.id
+				id: schedule.id
 			};
 		}),
 
-		eventClick: (info) => goto(`/animals/schedules/${info.event.id}`),
 		eventContent: (info) => {
 			const json = JSON.parse(info.event.title);
 
 			return {
-				html: `<div class="flex flex-col gap-2 p-2">
-							<div class="font-semibold">${json.animal}</div>
-							<div class="text-base">${json.title}</div>
-							<div class="text-xs">${json.vaccine}</div>
-							<div class="text-xs mt-2">${json.done ? 'finished' : 'in-progress'}</div>
+				html: `<div class="flex flex-col gap-1 p-2">
+							<div class="font-semibold">#${json.number.toString().padStart(6, '0')} ${json.vaccine}</div>
+							<div class="text-sm">${json.shots} ${json.shots > 1 ? 'shots' : 'shot'}</div>
+							<div class="text-xs mt-2">${json.status}</div>
 					   </div>`
 			};
 		}

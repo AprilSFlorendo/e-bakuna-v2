@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, gte } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -8,6 +8,7 @@ import { db } from '$lib/server/db';
 import { generateId } from 'lucia';
 import { request } from '$lib/server/db/schema/request';
 import { CalendarDate } from '@internationalized/date';
+import { vaccine } from '$lib/server/db/schema';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
@@ -15,7 +16,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	const vaccines = await db.query.vaccine.findMany({
-		orderBy: (vaccine, { asc }) => asc(vaccine.name)
+		orderBy: (vaccine, { asc }) => asc(vaccine.name),
+		where: gte(vaccine.available, 1)
 	});
 
 	const form = await superValidate(zod(schema));
@@ -27,7 +29,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		form,
 		vaccines: vaccines.map((vaccine) => ({
 			value: vaccine.id,
-			label: vaccine.name
+			label: `${vaccine.available?.toLocaleString()} - ${vaccine.name}`
 		}))
 	};
 };

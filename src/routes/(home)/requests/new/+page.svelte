@@ -7,7 +7,7 @@
 	const { vaccines, form } = data;
 
 	const today = new Date();
-	const startingDate = new CalendarDate(today.getFullYear(), today.getMonth(), today.getDate());
+	const startingDate = new CalendarDate(today.getFullYear(), today.getMonth() + 1, today.getDate());
 </script>
 
 <div class="p-0 sm:rounded-xl sm:bg-slate-500/10 sm:p-8">

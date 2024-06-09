@@ -22,7 +22,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const form = await superValidate(zod(schema));
 	const date = new Date();
-	form.data.date = new CalendarDate(date.getFullYear(), date.getMonth(), date.getDate()).toString();
+	form.data.date = new CalendarDate(
+		date.getFullYear(),
+		date.getMonth() + 1,
+		date.getDate()
+	).toString();
 	form.data.shots = 1;
 
 	return {

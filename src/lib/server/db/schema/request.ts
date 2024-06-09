@@ -11,7 +11,9 @@ export const request = sqliteTable('requests', {
 		.references(() => vaccine.id),
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 	shots: integer('shots').notNull(),
-	status: text('status', { enum: ['on-hold', 'pending', 'approved', 'completed'] }).notNull(),
+	status: text('status', {
+		enum: ['on-hold', 'pending', 'approved', 'completed', 'cancelled']
+	}).notNull(),
 	userId: text('user_id', { length: 100 })
 		.notNull()
 		.references(() => user.id)

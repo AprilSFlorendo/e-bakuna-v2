@@ -44,7 +44,7 @@
 </script>
 
 <div class="flex flex-col gap-4 p-0 sm:rounded-xl sm:bg-slate-500/10 sm:p-8">
-	<h1 class="text-3xl">My Vaccination Schedule</h1>
+	<h1 class="text-3xl">Client Schedules</h1>
 	<div class="h-full overflow-x-auto">
 		<div class="ec-dark min-w-[768px] pb-1">
 			<Calendar {plugins} {options} />

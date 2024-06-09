@@ -23,6 +23,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 		error(401, 'Unauthorized');
 	}
 
+	if (user?.isAdmin && !event.url.pathname.startsWith('/admin')) {
+		return redirect(303, '/admin');
+	}
+
+	if (!user?.isAdmin && event.url.pathname.startsWith('/admin')) {
+		return error(401, 'Sorry, you are not authorized to view this page.');
+	}
+
 	if (session && session.fresh) {
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		event.cookies.set(sessionCookie.name, sessionCookie.value, {

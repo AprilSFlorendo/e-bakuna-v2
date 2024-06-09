@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Separator } from '$lib/components/ui/separator';
 	import { cn } from '$lib/utils';
-	import { LayoutDashboard, MessageCircleHeart, PiggyBank, Syringe } from 'lucide-svelte';
+	import { LayoutDashboard, Syringe } from 'lucide-svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	$: handleNavSelection = (url: string) => {
-		if (url === '/home' && $page.url.pathname === '/') {
+		if (url === '/admin' && $page.url.pathname === '/admin') {
 			return 'bg-primary bg-opacity-75 text-black font-bold';
 		}
 
@@ -25,30 +24,17 @@
 
 <aside class={cn('flex flex-col gap-2 overflow-y-auto', className)}>
 	<nav class="flex flex-grow flex-col gap-2">
-		<a class={`${navStyles} ${handleNavSelection('/home')}`} href="/">
+		<a class={`${navStyles} ${handleNavSelection('/admin')}`} href="/admin">
 			<div class="flex gap-2">
 				<LayoutDashboard />
 				Dashboard
 			</div>
 		</a>
-		<a class={`${navStyles} ${handleNavSelection('/animals')}`} href="/animals">
-			<div class="flex gap-2">
-				<PiggyBank />
-				Animals
-			</div>
-		</a>
-		<a class={`${navStyles} ${handleNavSelection('/vaccines')}`} href="/vaccines">
+		<a class={`${navStyles} ${handleNavSelection('/admin/vaccines')}`} href="/admin/vaccines">
 			<div class="flex gap-2">
 				<Syringe />
 				Vaccines
 			</div>
 		</a>
 	</nav>
-	<Separator class="bg-zinc-500" />
-	<a class={`${navStyles} ${handleNavSelection('/feedback')}`} href="/feedback">
-		<div class="flex gap-2">
-			<MessageCircleHeart />
-			Feedback
-		</div>
-	</a>
 </aside>

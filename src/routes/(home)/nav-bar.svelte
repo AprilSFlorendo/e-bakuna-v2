@@ -4,7 +4,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import Logo from '$lib/assets/favicon.webp';
 	import { Button } from '$lib/components/ui/button';
-	import { SideNav } from '$lib/components/ui/side-nav';
+	import SideNav from './side-nav.svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { cn } from '$lib/utils';
 

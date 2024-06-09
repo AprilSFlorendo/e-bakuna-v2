@@ -26,7 +26,7 @@
 			};
 		}),
 
-		eventClick: (info) => goto(`/animals/schedules/${info.event.id}`),
+		eventClick: (info) => goto(`/request/${info.event.id}`),
 		eventContent: (info) => {
 			const json = JSON.parse(info.event.title);
 

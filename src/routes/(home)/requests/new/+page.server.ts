@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import { eq, desc } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -43,10 +44,20 @@ export const actions: Actions = {
 			return fail(401, { form });
 		}
 
-		console.log(form.data);
+		const latest = await db
+			.select()
+			.from(request)
+			.where(eq(request.userId, user!.id))
+			.orderBy(desc(request.ticketNumber))
+			.limit(1);
 
+		let number = 1;
+		if (latest.length > 0) {
+			number = latest[0].ticketNumber + 1;
+		}
 		await db.insert(request).values({
 			id: generateId(40),
+			ticketNumber: number,
 			date: new Date(form.data.date),
 			vaccineId: form.data.vaccine,
 			createdAt: new Date(Date.now()),

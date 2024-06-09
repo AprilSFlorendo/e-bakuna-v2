@@ -4,6 +4,7 @@ import { user, vaccine } from '.';
 
 export const request = sqliteTable('requests', {
 	id: text('id', { length: 100 }).primaryKey(),
+	ticketNumber: integer('ticket_number').notNull(),
 	date: integer('created_at', { mode: 'timestamp' }).notNull(),
 	vaccineId: text('vaccine_id', { length: 100 })
 		.notNull()

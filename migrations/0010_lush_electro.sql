@@ -1,0 +1,1 @@
+ALTER TABLE `requests` ADD `ticket_number` integer NOT NULL;
